@@ -5,16 +5,18 @@ const client = new DynamoDBClient({ region: "us-west-2" });
 
 export const handler = async (event, context) => {
 
-    console.log(event.pathParameters)
+    if(event.rawPath.includes('auth')){
+        return generatePolicy('user', 'Allow', event.routeArn)
+    }
 
-    const exists = await getDynamoToken(event.authorizationToken);
+    const exists = await getDynamoToken(event.headers.authorization);
 
 
     if (exists) {
-        return generatePolicy('user', 'Allow', event.methodArn)
+        return generatePolicy('user', 'Allow', event.routeArn)
     }
 
-    return generatePolicy('user', 'Deny', event.methodArn)
+    return generatePolicy('user', 'Deny', event.routeArn)
 };
 
 function generatePolicy(principalId, effect, resource) {

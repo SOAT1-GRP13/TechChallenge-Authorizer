@@ -1,0 +1,25 @@
+name: Deploy #Name of the Workflow
+
+on:
+  push:
+    branches:
+    - main   
+
+jobs: 
+  deploy_lambda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2 
+      - uses: actions/setup-node@v2
+        with:  
+          node-version: '18' 
+      - name: Configure AWS Credentials  
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-region: us-west-2
+          aws-access-key-id: ${{ secrets.ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.SECRET_KEY }}
+      - name: deploy
+        run: |
+          zip -j deploy.zip ./*
+          aws lambda update-function-code --function-name=techChallenge-authorizer --zip-file=fileb://deploy.zip
