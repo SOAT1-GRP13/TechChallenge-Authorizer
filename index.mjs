@@ -5,6 +5,7 @@ const client = new DynamoDBClient({ region: "us-west-2" });
 
 export const handler = async (event, context) => {
 
+    console.log(event.pathParameters)
 
     const exists = await getDynamoToken(event.authorizationToken);
 
